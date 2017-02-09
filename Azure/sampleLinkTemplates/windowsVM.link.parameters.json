@@ -1,0 +1,20 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUsername": {
+      "value": "igor"
+    },
+    "adminPassword": {
+		"reference" : {
+			"keyVault": {
+				"id" : "/subscriptions/xxxxxxx-2d6b-4ff4-xxxx-bf541cf8265f/resourceGroups/application-keyvault-rg/providers/Microsoft.KeyVault/vaults/managementkeyvault"
+			},
+				"secretName": "sql-server-pass"				
+		}
+	},
+    "dnsLabelPrefix": {
+      "value": "igorlozasomefakelabel"
+    }
+  }
+}

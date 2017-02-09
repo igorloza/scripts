@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "SampleVariable": {
+      "type": "string",
+      "metadata": {
+        "description": "Username for the Virtual Machine."
+      }
+    }
+  },
+  "variables": {
+    "linkApiVersion":"2015-01-01",
+	"LinkTemplates": {
+		"WindowsVM": {
+			"Uri": "[concat('<<placeholder>>','/windowsVM.link.json')]",
+			"ParameterUri": "[concat('<<placeholder>>','/windowsVM.link.parameters.json')]",
+			"ContentVersion": "1.0.0.0"
+		}
+	}
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "name": "linkWindowsVM",
+      "apiVersion": "[variables('linkApiVersion')]",
+      "properties": {
+		"mode": "incremental",
+		"templateLink":{
+			"uri": "[variables('LinkTemplates').WindowsVM.Uri]",
+			"contentVersion": "[variables('LinkTemplates').WindowsVM.ContentVersion]"
+		},
+		"parametersLink": {
+			"uri": "[variables('LinkTemplates').WindowsVM.ParameterUri]",
+			"contentVersion": "[variables('LinkTemplates').WindowsVM.ContentVersion]"
+		}
+      }
+    }
+  ]
+}
