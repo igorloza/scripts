@@ -1,0 +1,24 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultName": {
+      "value": "kv-aus-devops-key"
+    },
+    "storageAccountName": {
+      "value": "saausnpddevops"
+    },
+	"keysPermissions": {
+      "value": [ "all" ]
+    },
+	"secretsPermissions": {
+      "value": [ "all" ]
+    },
+    "objectId": {
+      "value": "e7xxx83-xxxx-4d24-xxxx-b0286xxxxfc3"
+    },
+    "tenantId": {
+      "value": "12xxxb9-xxxx-4d67-xxxx-ce3xxxe8fxxxf"
+    },
+  }
+}

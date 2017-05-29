@@ -1,0 +1,118 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "keyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "Envrionment Identifier"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Envrionment Identifier"
+      }
+    },
+    "objectId": {
+      "type": "string",
+      "defaultValue": "1b421c58-fd13-49cb-9aa4-4f83aa22cc9c",
+      "metadata": {
+        "description": "Object Id of the AD group. eg: d99c46d2-68a0-4346-86ef-a19d0131e367. This should be the AD group responsible for creation keyVault management"
+      }
+    },
+    "tenantId": {
+      "type": "string",
+      "defaultValue": "5d3876e9-27d7-4f71-8e25-8ea86a6d6f48",
+      "metadata": {
+        "description": "Tenant Id of the subscription. "
+      }
+    },
+    "keysPermissions": {
+      "type": "array",
+      "defaultValue": [ "all" ],
+      "metadata": {
+        "description": "Permissions to grant user to keys in the vault. Valid values are: all, create, import, update, get, list, delete, backup, restore, encrypt, decrypt, wrapkey, unwrapkey, sign, and verify."
+      }
+    },
+    "secretsPermissions": {
+      "type": "array",
+      "defaultValue": [ "all" ],
+      "metadata": {
+        "description": "Permissions to grant user to secrets in the vault. Valid values are: all, get, set, list, and delete."
+      }
+    },
+    "vaultSku": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Standard",
+        "Premium"
+      ],
+      "metadata": {
+        "description": "SKU for the vault"
+      }
+    },
+    "enabledForDeployment": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies if the vault is enabled for VM or Service Fabric deployment"
+      }
+    },
+    "enabledForTemplateDeployment": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies if the vault is enabled for ARM template deployment"
+      }
+    },
+    "enableVaultForVolumeEncryption": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Specifies if the vault is enabled for volume encryption"
+      }
+    }
+  },
+  "variables": {
+    "storageAccountType": "Standard_LRS",
+  },
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[parameters('keyVaultName')]",
+      "apiVersion": "2015-06-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "enabledForDeployment": "[parameters('enabledForDeployment')]",
+        "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
+        "enabledForVolumeEncryption": "[parameters('enableVaultForVolumeEncryption')]",
+		"tenantId": "[parameters('tenantId')]",
+        "accessPolicies": [
+          {
+			"tenantId": "[parameters('tenantId')]",
+			"objectId": "[parameters('objectId')]",
+            "permissions": {
+              "keys": "[parameters('keysPermissions')]",
+              "secrets": "[parameters('secretsPermissions')]"
+            }
+          }
+        ],
+        "sku": {
+          "name": "[parameters('vaultSku')]",
+          "family": "A"
+        }
+      }
+    },
+      {
+        "type": "Microsoft.Storage/storageAccounts",
+        "name": "[parameters('storageAccountName')]",
+        "apiVersion": "2015-05-01-preview",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "accountType": "[variables('storageAccountType')]"
+        }
+    }
+  ]
+}
