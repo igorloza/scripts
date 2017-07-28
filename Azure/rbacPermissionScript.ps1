@@ -23,6 +23,8 @@
 	A list of users that you would like to assin the role(s)
 .PARAMETER action
 	(Optional) The action required - Add or Remove. If left blank, default action is Add
+.PARAMETER searchBy
+	(Optional) The key to search for the user - Email or Name. If left blank, default search by is Name
 
 .NOTES 
     Author         :  Igor Loza - igor@loza.net.au, rogiloza@gmail.com
@@ -32,9 +34,11 @@
     .\rbacPermissionScript.ps1 -subscriptionName 'MySbuscriptionName' -roleList @('Contributor') -userList @('Igor Loza')
 	
 	.\rbacPermissionScript.ps1 -subscriptionName 'MySbuscriptionName' -roleList @('Classic Virtual Machine Contributor','Virtual Machine Contributor') -userList @('Igor Loza','FirstName2 Surname2')
+	
+	.\rbacPermissionScript.ps1 -subscriptionName 'MySbuscriptionName' -roleList @('Classic Virtual Machine Contributor','Virtual Machine Contributor') -userList @('A137161@agl.com.au') -searchBy Email
 
     .\rbacPermissionScript.ps1 -subscriptionName 'MySbuscriptionName' -roleList @('Classic Virtual Machine Contributor','Virtual Machine Contributor') -userList @('Igor Loza') -action Remove
-
+	
 
 #> 
 
@@ -66,22 +70,37 @@ param(
 	[Parameter(Mandatory=$false)]
 	[ValidateSet("Add", "Remove")]
     [String]
-	$action	
+	$action,
+	
+	[Parameter(Mandatory=$false)]
+	[ValidateSet("Name", "Email")]
+    [String]
+	$searchBy
 )
 
 # Example roleList
 # $roleList = @('Classic Virtual Machine Contributor','Virtual Machine Contributor')
 
-# Example userList
+# Example userList (if searchBy is blank or Name)
 # $userList = @('FirstName1 Surnmae1','FirstName2 Surname2');
 
+# Example userList (if searchBy Email)
+# $userList = @('A137161@agl.com.au');
 
 # Change context to the required subscription and assign subscriptionId
 $context = Set-AzureRmContext -SubscriptionName $subscriptionName
 $subscriptionId = 'subscriptions/' + $context.Subscription.SubscriptionId
 
 foreach($user in $userList) {
-    $userObject = Get-AzureRmADUser -SearchString $user
+	if($searchBy -eq "Email")
+	{
+		$userObject = Get-AzureRmADUser -Mail $user
+	}
+	else 
+	{
+		$userObject = Get-AzureRmADUser -SearchString $user
+		Write-Host $userObject
+	}
     foreach($uniqueUser in $userObject) {
         foreach ($role in $roleList) {
 			If($action -eq "Remove") {

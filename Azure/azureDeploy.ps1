@@ -119,7 +119,7 @@ Function Get-SecretsFromKeyVault ($key){
 #################################################################
 
 # Set Defaults
-$defaultStorageAccountName = "devopsbuild";
+$defaultStorageAccountName = "agldevopsbuild";
 [string]$defaultWorkingPath = Get-Location;
 $defaultWorkingPath = $defaultWorkingPath + "\";
 $defaultBuildPath = "C:\builddir\";
